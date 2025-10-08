@@ -596,152 +596,165 @@
                 </ul>
             </div>
         </div>
-
     </div>
 
     <script>
-        // Password definitions
-        const passwords = {
-            "165500": "akajaContainer",
-            "750530": "gufranContainer", 
-            "166600": "jerryContainer"
-        };
-        
-        // DOM elements
-        const lockScreen = document.getElementById('lockScreen');
-        const downloadPage = document.getElementById('downloadPage');
-        const passcodeDots = document.querySelectorAll('.passcode-dot');
-        const keys = document.querySelectorAll('.key');
-        const deleteKey = document.getElementById('deleteKey');
-        const errorMessage = document.getElementById('errorMessage');
-        const currentTime = document.getElementById('currentTime');
-        const currentDate = document.getElementById('currentDate');
-        const backBtn = document.getElementById('backBtn');
-        
-        // State variables
-        let enteredPasscode = '';
-        const maxPasscodeLength = 6;
-        
-        // Update time and date
-        function updateDateTime() {
-            const now = new Date();
-            
-            // Format time
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            currentTime.textContent = `${hours}:${minutes}`;
-            
-            // Format date
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
-            currentDate.textContent = now.toLocaleDateString('en-US', options);
-        }
-        
-        // Update passcode dots
-        function updatePasscodeDots() {
-            for (let i = 0; i < maxPasscodeLength; i++) {
-                if (i < enteredPasscode.length) {
-                    passcodeDots[i].classList.add('active');
-                } else {
-                    passcodeDots[i].classList.remove('active');
-                }
-            }
-        }
-        
-        // Handle key press
-        function handleKeyPress(key) {
-            if (enteredPasscode.length < maxPasscodeLength) {
-                enteredPasscode += key;
-                updatePasscodeDots();
-                
-                // Check if passcode is complete
-                if (enteredPasscode.length === maxPasscodeLength) {
-                    setTimeout(checkPasscode, 300); // Small delay for UX
-                }
-            }
-        }
-        
-        // Handle delete key
-        function handleDelete() {
-            if (enteredPasscode.length > 0) {
-                enteredPasscode = enteredPasscode.slice(0, -1);
-                updatePasscodeDots();
-                errorMessage.textContent = ''; // Clear error message
-            }
-        }
-        
-        // Check if entered passcode matches any of the passwords
-        function checkPasscode() {
-            if (passwords[enteredPasscode]) {
-                // Success - show download page and the correct app container
-                lockScreen.style.display = 'none';
-                downloadPage.style.display = 'block';
-                document.getElementById(passwords[enteredPasscode]).classList.remove('hidden');
-                
-                // Add download tracking
-                document.querySelector('.download-btn').addEventListener('click', function() {
-                    console.log('Download initiated for ' + passwords[enteredPasscode]);
+        // Anti-debugging and code protection techniques
+        (function() {
+            // Detect if DevTools is open
+            const devToolsDetector = function() {
+                const element = new Image();
+                Object.defineProperty(element, 'id', {
+                    get: function() {
+                        // This will trigger when DevTools is open
+                        console.clear();
+                        document.body.innerHTML = '<h1 style="color:white;text-align:center;padding:50px;">Access Restricted</h1>';
+                        throw new Error("DevTools detection");
+                    }
                 });
-            } else {
-                // Incorrect passcode
-                errorMessage.textContent = 'Incorrect passcode. Try again.';
-                enteredPasscode = '';
-                updatePasscodeDots();
-                
-                // Shake animation for error
-                lockScreen.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    lockScreen.style.animation = '';
-                }, 500);
-            }
-        }
-        
-        // Add shake animation for errors
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Back button functionality
-        backBtn.addEventListener('click', function() {
-            downloadPage.style.display = 'none';
-            lockScreen.style.display = 'block';
-            enteredPasscode = '';
-            updatePasscodeDots();
-            errorMessage.textContent = '';
+                console.log(element);
+            };
             
-            // Hide all app containers
-            document.getElementById('akajaContainer').classList.add('hidden');
-            document.getElementById('gufranContainer').classList.add('hidden');
-            document.getElementById('jerryContainer').classList.add('hidden');
-        });
-        
-        // Initialize the app
-        function init() {
-            // Set up key listeners
-            keys.forEach(key => {
-                if (key !== deleteKey) {
-                    key.addEventListener('click', () => {
-                        handleKeyPress(key.getAttribute('data-key'));
-                    });
+            // Periodically check for DevTools
+            setInterval(devToolsDetector, 1000);
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable keyboard shortcuts for DevTools
+            document.addEventListener('keydown', function(e) {
+                // Disable F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    return false;
                 }
             });
             
-            // Set up delete key listener
-            deleteKey.addEventListener('click', handleDelete);
+            // Obfuscated password definitions
+            const _0x3d5a = ['165500', 'akajaContainer', '750530', 'gufranContainer', '166600', 'jerryContainer'];
+            const passwords = {};
+            passwords[_0x3d5a[0]] = _0x3d5a[1];
+            passwords[_0x3d5a[2]] = _0x3d5a[3];
+            passwords[_0x3d5a[4]] = _0x3d5a[5];
             
-            // Update time immediately and then every minute
-            updateDateTime();
-            setInterval(updateDateTime, 60000);
-        }
-        
-        // Start the app
-        init();
+            // DOM elements
+            const lockScreen = document.getElementById('lockScreen');
+            const downloadPage = document.getElementById('downloadPage');
+            const passcodeDots = document.querySelectorAll('.passcode-dot');
+            const keys = document.querySelectorAll('.key');
+            const deleteKey = document.getElementById('deleteKey');
+            const errorMessage = document.getElementById('errorMessage');
+            const backBtn = document.getElementById('backBtn');
+            
+            // State variables
+            let enteredPasscode = '';
+            const maxPasscodeLength = 6;
+            
+            // Update passcode dots
+            function updatePasscodeDots() {
+                for (let i = 0; i < maxPasscodeLength; i++) {
+                    if (i < enteredPasscode.length) {
+                        passcodeDots[i].classList.add('active');
+                    } else {
+                        passcodeDots[i].classList.remove('active');
+                    }
+                }
+            }
+            
+            // Handle key press
+            function handleKeyPress(key) {
+                if (enteredPasscode.length < maxPasscodeLength) {
+                    enteredPasscode += key;
+                    updatePasscodeDots();
+                    
+                    // Check if passcode is complete
+                    if (enteredPasscode.length === maxPasscodeLength) {
+                        setTimeout(checkPasscode, 300); // Small delay for UX
+                    }
+                }
+            }
+            
+            // Handle delete key
+            function handleDelete() {
+                if (enteredPasscode.length > 0) {
+                    enteredPasscode = enteredPasscode.slice(0, -1);
+                    updatePasscodeDots();
+                    errorMessage.textContent = ''; // Clear error message
+                }
+            }
+            
+            // Check if entered passcode matches any of the passwords
+            function checkPasscode() {
+                if (passwords[enteredPasscode]) {
+                    // Success - show download page and the correct app container
+                    lockScreen.style.display = 'none';
+                    downloadPage.style.display = 'block';
+                    document.getElementById(passwords[enteredPasscode]).classList.remove('hidden');
+                    
+                    // Add download tracking
+                    document.querySelector('.download-btn').addEventListener('click', function() {
+                        console.log('Download initiated for ' + passwords[enteredPasscode]);
+                    });
+                } else {
+                    // Incorrect passcode
+                    errorMessage.textContent = 'Incorrect passcode. Try again.';
+                    enteredPasscode = '';
+                    updatePasscodeDots();
+                    
+                    // Shake animation for error
+                    lockScreen.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        lockScreen.style.animation = '';
+                    }, 500);
+                }
+            }
+            
+            // Back button functionality
+            backBtn.addEventListener('click', function() {
+                downloadPage.style.display = 'none';
+                lockScreen.style.display = 'block';
+                enteredPasscode = '';
+                updatePasscodeDots();
+                errorMessage.textContent = '';
+                
+                // Hide all app containers
+                document.getElementById('akajaContainer').classList.add('hidden');
+                document.getElementById('gufranContainer').classList.add('hidden');
+                document.getElementById('jerryContainer').classList.add('hidden');
+            });
+            
+            // Initialize the app
+            function init() {
+                // Set up key listeners
+                keys.forEach(key => {
+                    if (key !== deleteKey) {
+                        key.addEventListener('click', () => {
+                            handleKeyPress(key.getAttribute('data-key'));
+                        });
+                    }
+                });
+                
+                // Set up delete key listener
+                deleteKey.addEventListener('click', handleDelete);
+            }
+            
+            // Start the app
+            init();
+        })();
     </script>
 </body>
 </html>
