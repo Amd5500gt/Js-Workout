@@ -40,6 +40,10 @@
     overflow: hidden;
     z-index: 9999; /* on top of everything */
 }
+body.locked {
+    overflow: hidden;
+    height: 100vh;
+}
 
         .lock-screen::before {
             content: '';
@@ -744,6 +748,16 @@
         
         // Start the app
         init();
+        function lockScreen() {
+    document.body.classList.add("locked");
+    document.querySelector(".lock-screen").style.display = "block";
+}
+
+function unlockScreen() {
+    document.body.classList.remove("locked");
+    document.querySelector(".lock-screen").style.display = "none";
+}
+
     </script>
 </body>
 </html>
