@@ -3,91 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JMax App Download</title>
+    <title>JMax Pro - Premium Productivity Suite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        /* Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #22c55e;
+            --error: #ef4444;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .light-theme {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #059669;
+            --accent: #d97706;
+            --dark: #f1f5f9;
+            --darker: #e2e8f0;
+            --light: #0f172a;
+            --gray: #475569;
+            --success: #16a34a;
+            --error: #dc2626;
+            --glass: rgba(15, 23, 42, 0.08);
+            --glass-border: rgba(15, 23, 42, 0.1);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
         body {
-            background: url(user.jpg);
-            background-position: center;
-            background-size: cover;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
             min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        
+        /* 3D Background */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .light-theme .navbar {
+            background: rgba(241, 245, 249, 0.8);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--light);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-
-        }
-        
-        .lock-screen {
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.795);
-          
-            padding: 60px 50px;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-            text-align: center;
+            font-weight: 800;
             color: white;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-           
         }
         
-        .lock-screen::before {
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            width: 50px;
+            height: 26px;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            z-index: -1;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
-        .lock-icon {
-            font-size: 80px;
-            margin-bottom: 60px;
+        .light-theme .theme-toggle::before {
+            transform: translateX(24px);
+            background: var(--primary);
+        }
+        
+        .theme-toggle i {
+            font-size: 12px;
+            z-index: 1;
+        }
+        
+        .theme-toggle .fa-sun {
+            color: #fbbf24;
+        }
+        
+        .theme-toggle .fa-moon {
+            color: #cbd5e1;
+            margin-left: auto;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
         
-        .time-display {
-            font-size: 70px;
-            font-weight: 300;
-            margin-bottom: 5px;
-            letter-spacing: -2px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
         
-        .date-display {
-            font-size: 20px;
-            margin-bottom: 10px;
-            opacity: 0.9;
-            font-weight: 400;
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
         }
         
-        .passcode-display {
-            font-size: 24px;
-            letter-spacing: 10px;
-            margin: 20px 0;
-            height: 40px;
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            align-items: center;
+            min-height: 70vh;
+        }
+        
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), #eab308);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(90deg, var(--light), var(--gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 500px;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .hero-image {
             display: flex;
             justify-content: center;
             align-items: center;
         }
         
-        .passcode-dots {
+        .app-icon-large {
+            width: min(280px, 80vw);
+            height: min(280px, 80vw);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 40px;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 26px 0;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-icon-large::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .app-icon-large:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .app-icon-large span {
+            color: white;
+            font-size: clamp(60px, 15vw, 80px);
+            font-weight: 800;
+            z-index: 1;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-header {
+            padding: 2rem 2rem 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--light);
+        }
+        
+        .card-title i {
+            color: var(--accent);
+        }
+        
+        .card-description {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .card-body {
+            padding: 0 2rem 2rem;
+        }
+        
+        /* Features List */
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .features-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--light);
+        }
+        
+        .features-list li:hover {
+            transform: translateX(5px);
+        }
+        
+        .features-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Download Button */
+        .download-main {
+            display: block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .download-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+        
+        .download-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(99, 102, 241, 0.5);
+        }
+        
+        .download-main:hover::before {
+            left: 100%;
+        }
+        
+        /* Locked Access Card */
+        .passcode-display {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
         
         .passcode-dot {
@@ -95,38 +467,55 @@
             height: 16px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+            transition: var(--transition);
             border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
+        .light-theme .passcode-dot {
+            background: rgba(15, 23, 42, 0.2);
+            border: 2px solid rgba(15, 23, 42, 0.1);
+        }
+        
         .passcode-dot.active {
-            background: white;
-            transform: scale(1.1);
+            background: var(--light);
+            transform: scale(1.2);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .light-theme .passcode-dot.active {
+            background: var(--light);
+            box-shadow: 0 0 10px rgba(15, 23, 42, 0.5);
         }
         
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 1rem;
         }
         
         .key {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            height: 85px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            height: 70px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 25px;
-            font-weight: 400;
+            font-size: 1.25rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
             user-select: none;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+        }
+        
+        .light-theme .key {
+            background: rgba(15, 23, 42, 0.1);
+            color: var(--light);
         }
         
         .key::after {
@@ -136,13 +525,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
             opacity: 0;
             transition: opacity 0.3s;
         }
         
+        .light-theme .key::after {
+            background: radial-gradient(circle, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0) 70%);
+        }
+        
         .key:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .light-theme .key:hover {
+            background: rgba(15, 23, 42, 0.15);
         }
         
         .key:hover::after {
@@ -150,14 +548,20 @@
         }
         
         .key:active {
-            transform: scale(0.92);
-            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+        
+        .key-label {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            opacity: 0.7;
+            font-weight: 500;
         }
         
         .delete-key {
             grid-column: 3;
             grid-row: 4;
-            font-size: 24px;
+            font-size: 1.25rem;
         }
         
         .zero-key {
@@ -165,478 +569,492 @@
             grid-row: 4;
         }
         
-        .key-label {
-            font-size: 12px;
-            margin-top: 5px;
-            opacity: 0.7;
-        }
-        
-        .iphone-container {
-            width: 100%;
-           
-            background: #fff;
-         
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            display: none;
-            position: relative;
-        }
-        
-        .iphone-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-            pointer-events: none;
-        }
-        
-        .status-bar {
-            background: linear-gradient(to right, #f8f9fa, #e9ecef);
-            color: #333;
-            padding: 15px 25px;
-            height: 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-    
-        .time1 {
-            font-weight: 700;
-            text-align: center;
-            font-size: 24px;
-            color: #333;
-            margin: 0 auto;
-            letter-spacing: 0.5px;
-        }
-        
-        .app-icon {
-            width: 130px;
-            height: 130px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            border-radius: 25px;
-            margin: 0 auto 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .app-icon::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
-            z-index: 1;
-        }
-        
-        .app-icon span {
-            color: white;
-            font-size: 42px;
-            font-weight: bold;
-            z-index: 2;
-            position: relative;
-        }
-        
-        h1 {
-            font-size: 32px;
-            margin-bottom: 12px;
-            color: #1d1d1f;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        
-        .version {
-            color: #86868b;
-            margin-bottom: 30px;
-            font-size: 17px;
-            font-weight: 500;
-        }
-        
-        .description {
-            color: #515154;
-            line-height: 1.6;
-            margin-bottom: 35px;
-            font-size: 17px;
-            text-align: center;
-            padding: 0 10px;
-        }
-        
-        .download-btn {
-            display: block;
-            background: linear-gradient(to right, #007aff, #0056cc);
-            color: white;
-            padding: 18px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 18px;
-            width: 85%;
-            text-align: center;
-            margin: 0 auto;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
-            position: relative;
-            overflow: hidden;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .download-btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.7s;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.5);
-        }
-        
-        .download-btn:hover::after {
-            left: 100%;
-        }
-        
-        .download-btn:active {
-            transform: translateY(0);
-        }
-        
-        .features {
-            text-align: left;
-            margin-top: 35px;
-            padding: 0 10px;
-        }
-        
-        .features h2 {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #1d1d1f;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .feature-list {
-            list-style-type: none;
-        }
-        
-        .feature-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid #f2f2f7;
-            color: #515154;
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        
-        .feature-list li:hover {
-            background: rgba(0,0,0,0.02);
-            padding-left: 10px;
-        }
-        
-        .feature-list li:before {
-            content: "✓";
-            color: #34c759;
-            font-weight: bold;
-            margin-right: 12px;
-            font-size: 18px;
-        }
-
-            
-        .content {
-            padding: 30px 20px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
         .error-message {
-            color: #ff3b30;
-            margin-top: 15px;
-            font-size: 15px;
+            color: var(--error);
+            margin-top: 1rem;
+            font-size: 0.9rem;
             height: 20px;
             font-weight: 500;
+            text-align: center;
         }
         
-        .app-name {
-            font-size: 20px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 5px;
-            letter-spacing: 1px;
+        /* Unlocked Container */
+        .unlocked-container {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            animation: unlockAnimation 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        .notification {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            width: 8px;
-            height: 8px;
+        @keyframes unlockAnimation {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
         
-        .battery {
+        .unlocked-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--success);
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 14px;
+            gap: 0.75rem;
         }
         
-        .battery-level {
-            width: 25px;
-            height: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            border-radius: 3px;
-            position: relative;
-            overflow: hidden;
+        .unlocked-description {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-size: 1rem;
         }
         
-        .battery-level::after {
-            content: '';
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            height: 8px;
-            width: 18px;
-            background: white;
-            border-radius: 1px;
+        .user-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
         
-        .signal {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            margin-right: 10px;
-        }
-        
-        .signal-bar {
-            width: 3px;
-            background: white;
-            border-radius: 1px;
-        }
-        
-        .signal-bar:nth-child(1) { height: 5px; }
-        .signal-bar:nth-child(2) { height: 8px; }
-        .signal-bar:nth-child(3) { height: 11px; }
-        .signal-bar:nth-child(4) { height: 14px; }
-        
-        .status-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .app-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff2d55, #ff375f);
-            color: white;
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-        
-        .back-btn {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            background: rgba(0, 0, 0, 0.05);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            border: 1px solid transparent;
             cursor: pointer;
-            transition: all 0.3s;
-            color: #333;
-            font-size: 18px;
         }
         
-        .back-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
+        .light-theme .user-card {
+            background: rgba(15, 23, 42, 0.05);
+        }
+        
+        .user-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+            border-color: var(--glass-border);
+        }
+        
+        .light-theme .user-card:hover {
+            background: rgba(15, 23, 42, 0.08);
+        }
+        
+        .user-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--light);
+        }
+        
+        .user-name i {
+            color: var(--accent);
+        }
+        
+        .user-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        
+        .user-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            width: fit-content;
+        }
+        
+        .light-theme .user-download {
+            background: rgba(15, 23, 42, 0.1);
+        }
+        
+        .user-download:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .light-theme .user-download:hover {
+            background: rgba(15, 23, 42, 0.15);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 3rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem 0;
+                border-top: 1px solid var(--glass-border);
+            }
+            
+            .light-theme .nav-links {
+                background: rgba(241, 245, 249, 0.95);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .app-icon-large {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .app-icon-large span {
+                font-size: 60px;
+            }
+            
+            .card-header, .card-body {
+                padding: 1.5rem;
+            }
+            
+            .key {
+                height: 60px;
+                font-size: 1.1rem;
+            }
+            
+            .hero-stats {
+                gap: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
         }
     </style>
 </head>
 <body>
-    <!-- Lock Screen -->
-    <div class="lock-screen" id="lockScreen">
-        <div class="notification"></div>
-        <div class="lock-icon"><i class="fas fa-lock"></i></div>
+    <div id="three-container"></div>
     
-        <div class="app-name">JS FLASH</div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <div class="logo-icon">J</div>
+            <span>JMax Flash</span>
+        </a>
         
-        <div class="passcode-dots">
-            <div class="passcode-dot" id="dot1"></div>
-            <div class="passcode-dot" id="dot2"></div>
-            <div class="passcode-dot" id="dot3"></div>
-            <div class="passcode-dot" id="dot4"></div>
-            <div class="passcode-dot" id="dot5"></div>
-            <div class="passcode-dot" id="dot6"></div>
+        <div class="nav-controls">
+            <div class="nav-links">
+                <a href="https://portfolio-ht.vercel.app" class="nav-link">Home</a>
+            </div>
+            
+            <div class="theme-toggle" id="themeToggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-        <div class="error-message" id="errorMessage"></div>
-        
-        <div class="keypad">
-            <div class="key" data-key="1">
-                1
-                <div class="key-label"></div>
-            </div>
-            <div class="key" data-key="2">
-                2
-                <div class="key-label">ABC</div>
-            </div>
-            <div class="key" data-key="3">
-                3
-                <div class="key-label">DEF</div>
-            </div>
-            <div class="key" data-key="4">
-                4
-                <div class="key-label">GHI</div>
-            </div>
-            <div class="key" data-key="5">
-                5
-                <div class="key-label">JKL</div>
-            </div>
-            <div class="key" data-key="6">
-                6
-                <div class="key-label">MNO</div>
-            </div>
-            <div class="key" data-key="7">
-                7
-                <div class="key-label">PQRS</div>
-            </div>
-            <div class="key" data-key="8">
-                8
-                <div class="key-label">TUV</div>
-            </div>
-            <div class="key" data-key="9">
-                9
-                <div class="key-label">WXYZ</div>
-            </div>
-            <div class="key" data-key="9">
-                JS
-                <div class="key-label">max</div>
-            </div>
-            <div class="key zero-key" data-key="0">
-                0
-            </div>
-            <div class="key delete-key" id="deleteKey">
-                <i class="fas fa-delete-left"></i>
-            </div>
-        </div>
-        
-        </div>
-    </div>
+    </nav>
     
-    <!-- Download Page (Initially Hidden) -->
-    <div class="iphone-container" id="downloadPage">
-        <div class="back-btn" id="backBtn">
-            <i class="fas fa-chevron-left"></i>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <span class="hero-badge">FLASH</span>
+                <h1 class="hero-title">Transform Your Productivity with JMax Flash</h1>
+                <p class="hero-description">
+                    The ultimate all-in-one solution for managing tasks, tracking progress, and achieving your goals faster than ever before.
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-value">Schedule</div>
+                        <div class="stat-label">Reminder</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">Workout</div>
+                        <div class="stat-label">Reminder</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">Progress</div>
+                        <div class="stat-label">Tracker</div>
+                    </div>
+                </div>
+                
+                <a href="Asset/JSW-Flash.apk" class="download-main" download="JSW-Flash.apk">
+                    <i class="fas fa-download"></i> Download JMax Flash
+                </a>
+            </div>
+            
+            <div class="hero-image">
+                <div class="app-icon-large">
+                    <span>JMax</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Cards Grid -->
+        <div class="cards-grid cards">
+            <!-- Features Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-star"></i> Premium Features
+                    </h2>
+                    <p class="card-description">
+                        Unlock the full potential of JMax Pro with these exclusive features.
+                    </p>
+                </div>
+                <div class="card-body">
+                    <ul class="features-list">
+                        <li>Advanced Task Management System</li>
+                        <li>Real-time Progress Analytics</li>
+                        <li>Customizable Workflow Templates</li>
+                        <li>Secure Cloud Synchronization</li>
+                        <li>Intelligent Performance Insights</li>
+                        <li>Cross-Platform Compatibility</li>
+                        <li>Priority Customer Support</li>
+                        <li>Regular Feature Updates</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Locked Access Card -->
+            <div class="card" id="lockedContainer">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-lock"></i> Premium Access
+                    </h2>
+                    <p class="card-description">
+                        Enter your unique access code to unlock personalized app versions with specialized features.
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="passcode-display">
+                        <div class="passcode-dot" id="dot1"></div>
+                        <div class="passcode-dot" id="dot2"></div>
+                        <div class="passcode-dot" id="dot3"></div>
+                        <div class="passcode-dot" id="dot4"></div>
+                        <div class="passcode-dot" id="dot5"></div>
+                        <div class="passcode-dot" id="dot6"></div>
+                    </div>
+                    
+                    <div class="error-message" id="errorMessage"></div>
+                    
+                    <div class="keypad">
+                        <div class="key" data-key="1">
+                            1
+                            <div class="key-label"></div>
+                        </div>
+                        <div class="key" data-key="2">
+                            2
+                            <div class="key-label">ABC</div>
+                        </div>
+                        <div class="key" data-key="3">
+                            3
+                            <div class="key-label">DEF</div>
+                        </div>
+                        <div class="key" data-key="4">
+                            4
+                            <div class="key-label">GHI</div>
+                        </div>
+                        <div class="key" data-key="5">
+                            5
+                            <div class="key-label">JKL</div>
+                        </div>
+                        <div class="key" data-key="6">
+                            6
+                            <div class="key-label">MNO</div>
+                        </div>
+                        <div class="key" data-key="7">
+                            7
+                            <div class="key-label">PQRS</div>
+                        </div>
+                        <div class="key" data-key="8">
+                            8
+                            <div class="key-label">TUV</div>
+                        </div>
+                        <div class="key" data-key="9">
+                            9
+                            <div class="key-label">WXYZ</div>
+                        </div>
+                        <div class="key" data-key="0">
+                            <i class="fas fa-fingerprint"></i>
+                            <div class="key-label">Bio</div>
+                        </div>
+                        <div class="key zero-key" data-key="0">
+                            0
+                        </div>
+                        <div class="key delete-key" id="deleteKey">
+                            <i class="fas fa-delete-left"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Unlocked Container (Initially Hidden) -->
+            <div class="card unlocked-container hidden" id="unlockedContainer">
+                <div class="card-header">
+                    <h2 class="unlocked-title">
+                        <i class="fas fa-unlock"></i> Access Granted!
+                    </h2>
+                    <p class="unlocked-description">
+                        Your personalized app versions are now available for download.
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="user-grid">
+                        <div class="user-card">
+                            <div class="user-name">
+                                <i class="fas fa-user-tie"></i> Akaja Edition
+                            </div>
+                            <div class="user-description">
+                                Optimized for executive workflows with advanced analytics and reporting features.
+                            </div>
+                            <a href="Asset/Jsw(ht).apk" class="user-download" download="JMax-Akaja.apk">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                        
+                        <div class="user-card">
+                            <div class="user-name">
+                                <i class="fas fa-user-cog"></i> Gufran Edition
+                            </div>
+                            <div class="user-description">
+                                Customized for technical users with developer tools and integration capabilities.
+                            </div>
+                            <a href="Asset/jsw(guf).apk" class="user-download" download="JMax-Gufran.apk">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                        
+                        <div class="user-card">
+                            <div class="user-name">
+                                <i class="fas fa-user-chart"></i> Jerry Edition
+                            </div>
+                            <div class="user-description">
+                                Tailored for analytics professionals with enhanced data visualization tools.
+                            </div>
+                            <a href="Asset/jsw(kr).apk" class="user-download" download="JMax-Jerry.apk">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="status-bar">
-            <div class="time1">JMax Flash</div>
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 JMax Flash. All rights reserved. | Privacy Policy | Terms of Service</p>
         </div>
-        
-        <div class="content">
-            <div class="app-icon">
-                <span>JMax</span>
-            </div>
-            
-            <h1>JMax App <span class="app-badge">PRO</span></h1>
-            <div class="version">Version 2.1.5</div>
-            
-            <p class="description">
-                Experience the ultimate performance with JMax. Download now to unlock premium features and enhanced functionality.
-            </p>
-            
-            <!-- Hidden containers for different apps -->
-            <div id="akajaContainer" class="hidden">
-                <a href="Asset/Jsw(ht).apk" class="download-btn" download="akaja_app.apk">
-                    <i class="fas fa-download"></i> Download Akaja App
-                </a>
-            </div>
-            
-            <div id="gufranContainer" class="hidden">
-                <a href="Asset/jsw(guf).apk" class="download-btn" download="gufran_app.apk">
-                    <i class="fas fa-download"></i> Download Gufran App
-                </a>
-            </div>
-            
-            <div id="jerryContainer" class="hidden">
-                <a href="Asset/jsw(kr).apk" class="download-btn" download="jerry_app.apk">
-                    <i class="fas fa-download"></i> Download Jerry App
-                </a>
-            </div>
-            
-            <div class="features">
-                <h2>Key Features</h2>
-                <ul class="feature-list">
-                    <li>Daily Workout Plans</li>
-                    <li>Advanced Progress Tracker</li>
-                    <li>Secure and Reliable</li>
-                    <li>User-friendly Interface</li>
-                    <li>High Performance Optimization</li>
-                    <li>Personalized Recommendations</li>
-                </ul>
-            </div>
-        </div>
-
     </div>
 
     <script>
         // Password definitions
         const passwords = {
-            "165500": "akajaContainer",
-            "750530": "gufranContainer", 
-            "166600": "jerryContainer"
+            "165500": "Akaja Edition",
+            "750530": "Gufran Edition", 
+            "166600": "Jerry Edition"
         };
         
         // DOM elements
-        const lockScreen = document.getElementById('lockScreen');
-        const downloadPage = document.getElementById('downloadPage');
+        const lockedContainer = document.getElementById('lockedContainer');
+        const unlockedContainer = document.getElementById('unlockedContainer');
         const passcodeDots = document.querySelectorAll('.passcode-dot');
         const keys = document.querySelectorAll('.key');
         const deleteKey = document.getElementById('deleteKey');
         const errorMessage = document.getElementById('errorMessage');
-        const currentTime = document.getElementById('currentTime');
-        const currentDate = document.getElementById('currentDate');
-        const backBtn = document.getElementById('backBtn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.querySelector('.nav-links');
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
         
         // State variables
         let enteredPasscode = '';
         const maxPasscodeLength = 6;
-        
-        // Update time and date
-        function updateDateTime() {
-            const now = new Date();
-            
-            // Format time
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            currentTime.textContent = `${hours}:${minutes}`;
-            
-            // Format date
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
-            currentDate.textContent = now.toLocaleDateString('en-US', options);
-        }
         
         // Update passcode dots
         function updatePasscodeDots() {
@@ -657,7 +1075,7 @@
                 
                 // Check if passcode is complete
                 if (enteredPasscode.length === maxPasscodeLength) {
-                    setTimeout(checkPasscode, 300); // Small delay for UX
+                    setTimeout(checkPasscode, 300);
                 }
             }
         }
@@ -667,60 +1085,55 @@
             if (enteredPasscode.length > 0) {
                 enteredPasscode = enteredPasscode.slice(0, -1);
                 updatePasscodeDots();
-                errorMessage.textContent = ''; // Clear error message
+                errorMessage.textContent = '';
             }
         }
         
         // Check if entered passcode matches any of the passwords
         function checkPasscode() {
             if (passwords[enteredPasscode]) {
-                // Success - show download page and the correct app container
-                lockScreen.style.display = 'none';
-                downloadPage.style.display = 'block';
-                document.getElementById(passwords[enteredPasscode]).classList.remove('hidden');
+                // Success - show unlocked container
+                lockedContainer.classList.add('hidden');
+                unlockedContainer.classList.remove('hidden');
                 
-                // Add download tracking
-                document.querySelector('.download-btn').addEventListener('click', function() {
-                    console.log('Download initiated for ' + passwords[enteredPasscode]);
-                });
+                // Add success effect
+                unlockedContainer.style.animation = 'none';
+                setTimeout(() => {
+                    unlockedContainer.style.animation = 'unlockAnimation 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                }, 10);
             } else {
                 // Incorrect passcode
-                errorMessage.textContent = 'Incorrect passcode. Try again.';
+                errorMessage.textContent = 'Invalid access code. Please try again.';
                 enteredPasscode = '';
                 updatePasscodeDots();
                 
                 // Shake animation for error
-                lockScreen.style.animation = 'shake 0.5s';
+                lockedContainer.classList.add('shake');
                 setTimeout(() => {
-                    lockScreen.style.animation = '';
+                    lockedContainer.classList.remove('shake');
                 }, 500);
             }
         }
         
-        // Add shake animation for errors
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            navLinks.classList.toggle('active');
+        }
         
-        // Back button functionality
-        backBtn.addEventListener('click', function() {
-            downloadPage.style.display = 'none';
-            lockScreen.style.display = 'block';
-            enteredPasscode = '';
-            updatePasscodeDots();
-            errorMessage.textContent = '';
+        // Toggle theme
+        function toggleTheme() {
+            body.classList.toggle('light-theme');
             
-            // Hide all app containers
-            document.getElementById('akajaContainer').classList.add('hidden');
-            document.getElementById('gufranContainer').classList.add('hidden');
-            document.getElementById('jerryContainer').classList.add('hidden');
-        });
+            // Save theme preference
+            if (body.classList.contains('light-theme')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // Update 3D background colors
+            updateSceneColors();
+        }
         
         // Initialize the app
         function init() {
@@ -736,13 +1149,119 @@
             // Set up delete key listener
             deleteKey.addEventListener('click', handleDelete);
             
-            // Update time immediately and then every minute
-            updateDateTime();
-            setInterval(updateDateTime, 60000);
+            // Set up mobile menu listener
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            
+            // Set up theme toggle listener
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                body.classList.add('light-theme');
+            }
+        }
+        
+        // 3D Background with Three.js - Stars
+        let scene, camera, renderer, stars = [];
+        
+        function initThreeJS() {
+            // Create scene
+            scene = new THREE.Scene();
+            
+            // Setup camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 50;
+            
+            // Setup renderer
+            renderer = new THREE.WebGLRenderer({ 
+                alpha: true, 
+                antialias: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+            
+            // Create stars
+            createStars();
+            
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createStars() {
+            const starGeometry = new THREE.SphereGeometry(0.5, 24, 24);
+            
+            for (let i = 0; i < 500; i++) {
+                const starMaterial = new THREE.MeshPhongMaterial({
+                    color: body.classList.contains('light-theme') ? 0x4f46e5 : 0xffffff,
+                    shininess: 100,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const star = new THREE.Mesh(starGeometry, starMaterial);
+                
+                // Random position
+                star.position.x = Math.random() * 200 - 100;
+                star.position.y = Math.random() * 200 - 100;
+                star.position.z = Math.random() * 200 - 100;
+                
+                // Random size
+                const scale = Math.random() * 1.5 + 0.5;
+                star.scale.set(scale, scale, scale);
+                
+                scene.add(star);
+                stars.push(star);
+            }
+        }
+        
+        function updateSceneColors() {
+            stars.forEach(star => {
+                star.material.color.setHex(body.classList.contains('light-theme') ? 0x4f46e5 : 0xffffff);
+            });
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate stars
+            stars.forEach(star => {
+                star.rotation.x += 0.005;
+                star.rotation.y += 0.005;
+                
+                // Move stars in circular patterns
+                star.position.x += Math.sin(Date.now() * 0.001 + star.position.z) * 0.02;
+                star.position.y += Math.cos(Date.now() * 0.001 + star.position.x) * 0.02;
+            });
+            
+            // Rotate entire scene
+            scene.rotation.y += 0.001;
+            scene.rotation.x += 0.0005;
+            
+            renderer.render(scene, camera);
         }
         
         // Start the app
         init();
+        initThreeJS();
     </script>
 </body>
 </html>
