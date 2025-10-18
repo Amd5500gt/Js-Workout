@@ -4,7 +4,7 @@
   "description": "Advanced home workout sessions with dumbbells",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0F1419",
+  "background_color": "#0a20308f",
   "theme_color": "#0a20308f",
   "orientation": "portrait-primary",
   "scope": "/",
